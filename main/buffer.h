@@ -1,0 +1,28 @@
+#ifndef BUFFER_H //creates a library for functions
+#define BUFFER_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ncurses.h>
+#include <pthread.h>
+
+
+// setting up the buffer
+//the buffer will be edited by the users, once editing is complete,
+// the buffer will be written in list.txt
+//This will help to avoid errors while multiple users are editing the file
+typedef struct {
+    char **lines; // a pointer to an array of line pointers 
+    int count; // the amount of lines in the buffer
+    int capacity;// the amount of lines pointers allocated
+    pthread_mutex_t lock; //only one thread can edit the buffer 
+} BufferLines;
+
+// Function declarations (interface only)
+void initial_buffer(BufferLines *buffer);
+void free_buffer(BufferLines *buffer);
+void edit_buffer(BufferLines *buffer, const char *new_line);
+
+
+#endif
