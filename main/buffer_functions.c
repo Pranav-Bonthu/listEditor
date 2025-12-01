@@ -17,7 +17,7 @@ void initial_buffer(BufferLines *buffer){
 
 
 // reallocated memory when new line are added to the buffer
-void edit_buffer(BufferLines *buffer, const char *new_line){
+void edit_buffer_memory(BufferLines *buffer, const char *new_line){
     pthread_mutex_lock(&buffer -> lock); //lock the buffer for memory reallocation
 
     if (buffer -> count >= buffer -> capacity) {

@@ -19,10 +19,12 @@ typedef struct {
     pthread_mutex_t lock; //only one thread can edit the buffer 
 } BufferLines;
 
-// Function declarations (interface only)
+// Function declarations 
 void initial_buffer(BufferLines *buffer);
 void free_buffer(BufferLines *buffer);
-void edit_buffer(BufferLines *buffer, const char *new_line);
+void edit_buffer_memory(BufferLines *buffer, const char *new_line);
+void load_file(BufferLines *buffer, const char *filename);
+void print_buffer(BufferLines *buffer);
 
 
 #endif

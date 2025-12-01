@@ -3,3 +3,4 @@
 #include <string.h>
 #include <ncurses.h>
 #include <pthread.h>
+#include "buffer.h"
