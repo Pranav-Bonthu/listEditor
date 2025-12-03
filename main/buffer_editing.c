@@ -38,8 +38,3 @@ void print_buffer(BufferLines *buffer){
     
     pthread_mutex_unlock(&buffer->lock);
 }
-
-
-int main(){
-    return 0;
-}
