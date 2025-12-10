@@ -30,15 +30,12 @@ void load_file(BufferLines *buffer, const char *filename){
 }
 
 void print_buffer(BufferLines *buffer){
-    pthread_mutex_lock(&buffer->lock);
     clear(); // clears the screen before printing
     
     for (int i = 0; i < buffer->count; i++){
          mvprintw(i, 0, "%s", buffer->lines[i]); 
          // printf does nto work with ncurses, so mvprintw is used 
     }
-    
-    pthread_mutex_unlock(&buffer->lock);
 }
 
 void insert_char(char *line, char c, int position){
@@ -76,21 +73,21 @@ void edit_buffer(BufferLines *buffer){
         }
 
         switch (c){
-        case 260: // left arrow key
+        case 259: // left arrow key
             cursor_row = cursor_row - 1;
             if (cursor_row < 0){cursor_row = 0;}
             break;
 
-        case 261: // right arrow key
+        case 258: // right arrow key
             int line_len = strlen(buffer->lines[cursor_row]); 
             cursor_row = cursor_row + 1;
             if (cursor_row > line_len ){cursor_row = line_len;}            
             break;      
-        case 259: // up arrow key
+        case 260: // up arrow key
             cursor_col = cursor_col - 1;
             if (cursor_row == 0){cursor_row = 0;}
             break;
-        case 258: // down arrow key
+        case 261: // down arrow key
             cursor_col = cursor_col + 1;
             if (cursor_row == buffer->count - 1){cursor_row = buffer->count - 1;}
             break;
