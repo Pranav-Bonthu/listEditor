@@ -25,6 +25,7 @@ void free_buffer(BufferLines *buffer);
 void edit_buffer_memory(BufferLines *buffer, const char *new_line);
 void load_file(BufferLines *buffer, const char *filename);
 void print_buffer(BufferLines *buffer);
+void edit_buffer(BufferLines *buffer);
 
 
 #endif
