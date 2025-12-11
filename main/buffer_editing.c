@@ -4,6 +4,8 @@
 #include <ncurses.h>
 #include <pthread.h>
 #include "buffer.h"
+#include <sys/file.h> 
+
 
 const char *filename = "list.txt";
 

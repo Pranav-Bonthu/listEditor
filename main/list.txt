@@ -1,3 +1,3 @@
-Task One - Done
-Task Two - Done
-Task Three - In Progress
+Task one - hello
+Task two - complete
+Task three - incomplete

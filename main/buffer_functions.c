@@ -4,7 +4,9 @@
 #include <ncurses.h>
 #include <pthread.h>
 #include "buffer.h"
-
+#include <sys/file.h> 
+#include <fcntl.h>     // O_RDWR
+#include <unistd.h>    // close()
 
 
 // giving initial values to the buffer
@@ -59,6 +61,25 @@ void free_buffer(BufferLines *buffer){
     pthread_mutex_destroy(&buffer -> lock); // destroy the mutex
     buffer = NULL;
 }   
+
+int lock_file(const char *filename){
+    int check_lock = open(filename, O_RDWR); //rdwr = read write
+    if (check_lock < 0){
+        return -1; //this happens when an error occurs while opening the file
+    }
+    if (flock(check_lock,  LOCK_EX) < 0){ //LOCK_EX Place an exclusive lock. Only one process might hold an exclusive lock for a given file at a given time.
+        close(check_lock);
+        return -1;//someone else is editing the fle
+    }
+    return check_lock; //will be used to unlock the file later 
+}
+
+void unlock_file(int fd){
+    if (fd >= 0) {
+        flock(fd, LOCK_UN); // LOCK_UN Remove an existing lock that is held by this process.
+        close(fd); 
+    }
+}
 
 
 
