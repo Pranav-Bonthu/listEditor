@@ -26,6 +26,11 @@ void edit_buffer_memory(BufferLines *buffer, const char *new_line);
 void load_file(BufferLines *buffer, const char *filename);
 void print_buffer(BufferLines *buffer);
 void edit_buffer(BufferLines *buffer);
+void insert_char(char *line, char c, int position);
+void delete_char(char *line, int position);
+void delete_line(BufferLines *buffer, int line_number);
+
+
 
 
 #endif

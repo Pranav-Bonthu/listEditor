@@ -46,15 +46,6 @@ void insert_char(char *line, char c, int position){
     line[position] = c; // insert the new character
 }
 
-void delete_char(char *line, int position){
-    size_t len = strlen(line);
-    if (position < 0 || position >= len){ 
-        return; //out of bounds
-    } 
-    for (size_t i = position; i < len; i++){ //starts at the position of the deleted index
-        line[i] = line[i + 1]; // shift characters to the left once a character is delected
-    }
-}
 
 void delete_line(BufferLines *buffer, int line_number){
     if (line_number < 0 || line_number >= buffer->count){
@@ -68,8 +59,15 @@ void delete_line(BufferLines *buffer, int line_number){
     buffer->count--; // decrease the count of lines in the buffer
 }
 
-
-
+void delete_char(char *line, int position){
+    size_t len = strlen(line);
+    if (position < 0 || position >= len){ 
+        return; //out of bounds
+    } 
+    for (size_t i = position; i < len; i++){ //starts at the position of the deleted index
+        line[i] = line[i + 1]; // shift characters to the left once a character is delected
+    }
+}
 
 
 void edit_buffer(BufferLines *buffer){
@@ -114,8 +112,21 @@ void edit_buffer(BufferLines *buffer){
             if (cursor_col > 0 && cursor_row < buffer->count){
                 delete_char(buffer->lines[cursor_row], cursor_col - 1);
                 cursor_col = cursor_col - 1;
-                break;
+                  if (strlen(buffer->lines[cursor_row]) == 0){
+                    delete_line(buffer,cursor_row ); // delete the line if it becomes empty
+                     }
                 }
+            break;
+        case '\n': // enter key
+            // Move to the next line
+            cursor_row = cursor_row + 1;
+            cursor_col = 0;
+            if (cursor_row >= buffer->count){
+                pthread_mutex_unlock(&buffer->lock); //edit buffer memory locks the buffer, so if not unclocked it will be ad deadlock
+                edit_buffer_memory(buffer, ""); // add a new empty line if at the end of the buffer
+                pthread_mutex_lock(&buffer->lock); // lock the buffer again after editing
+            }
+            break;
         default:
             if (c >= 32 && c <= 126){ // printable characters
                 insert_char(buffer->lines[cursor_row], (char)c, cursor_col);
