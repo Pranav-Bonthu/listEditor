@@ -40,7 +40,7 @@ void print_buffer(BufferLines *buffer){
 
 void insert_char(char *line, char c, int position){
     size_t len = strlen(line);
-    for (size_t i = len; i >= position; i--){
+    for (size_t i = len; i >= position; i--){ //starts at the position of the added index
         line[i + 1] = line[i]; // shift characters to the right
     }
     line[position] = c; // insert the new character
@@ -48,10 +48,29 @@ void insert_char(char *line, char c, int position){
 
 void delete_char(char *line, int position){
     size_t len = strlen(line);
-    for (size_t i = position; i < len; i++){
-        line[i] = line[i + 1]; // shift characters to the left
+    if (position < 0 || position >= len){ 
+        return; //out of bounds
+    } 
+    for (size_t i = position; i < len; i++){ //starts at the position of the deleted index
+        line[i] = line[i + 1]; // shift characters to the left once a character is delected
     }
 }
+
+void delete_line(BufferLines *buffer, int line_number){
+    if (line_number < 0 || line_number >= buffer->count){
+        return; // out of bounds
+    }
+    free(buffer->lines[line_number]); // free memory of the line to be deleted
+
+    for (int i = line_number; i < buffer->count - 1; i++){
+        buffer->lines[i] = buffer->lines[i + 1]; // shift lines up
+    }
+    buffer->count--; // decrease the count of lines in the buffer
+}
+
+
+
+
 
 void edit_buffer(BufferLines *buffer){
 
@@ -91,10 +110,12 @@ void edit_buffer(BufferLines *buffer){
             cursor_col = cursor_col + 1;
             if (cursor_row == buffer->count - 1){cursor_row = buffer->count - 1;}
             break;
-        case 127: // backspace key
-            delete_char(buffer->lines[cursor_row], cursor_col - 1);
-            cursor_col = cursor_col - 1;
-            break;
+        case KEY_BACKSPACE: // backspace key
+            if (cursor_col > 0 && cursor_row < buffer->count){
+                delete_char(buffer->lines[cursor_row], cursor_col - 1);
+                cursor_col = cursor_col - 1;
+                break;
+                }
         default:
             if (c >= 32 && c <= 126){ // printable characters
                 insert_char(buffer->lines[cursor_row], (char)c, cursor_col);
