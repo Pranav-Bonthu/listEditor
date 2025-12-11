@@ -40,7 +40,7 @@ void print_buffer(BufferLines *buffer){
 
 void insert_char(char *line, char c, int position){
     size_t len = strlen(line);
-    for (size_t i = len; i >= position; i--){ //starts at the position of the added index
+    for (int i = (int)len; i >= position; i--){ //starts at the position of the added index
         line[i + 1] = line[i]; // shift characters to the right
     }
     line[position] = c; // insert the new character
@@ -57,6 +57,41 @@ void delete_line(BufferLines *buffer, int line_number){
         buffer->lines[i] = buffer->lines[i + 1]; // shift lines up
     }
     buffer->count--; // decrease the count of lines in the buffer
+}
+
+void insert_line(BufferLines *buffer, int line_index, const char *new_line){
+
+    if (line_index < 0 || line_index > buffer->count) {
+        pthread_mutex_unlock(&buffer->lock);
+        return; // out of bounds
+    }
+    
+    // Check if we need to expand capacity
+    if (buffer->count >= buffer->capacity) {
+        buffer->capacity *= 2;
+        char **checker = realloc(buffer->lines, sizeof(char*) * buffer->capacity);
+        
+        if (checker == NULL) {
+            pthread_mutex_unlock(&buffer->lock);
+            return;
+        }
+        buffer->lines = checker;
+    }
+    
+    // Shift all lines from line_index down by one
+    for (int i = buffer->count; i > line_index; i--) {
+        buffer->lines[i] = buffer->lines[i - 1];
+    }
+    
+    // Allocate memory for the new line at line_index
+    buffer->lines[line_index] = malloc(1024);
+  
+  
+    // Copy the new line content
+    strcpy(buffer->lines[line_index], new_line);
+    
+    // Increase the count
+    buffer->count = buffer->count + 1;    
 }
 
 void delete_char(char *line, int position){
@@ -86,7 +121,21 @@ void edit_buffer(BufferLines *buffer){
         //getch();
 
         if (c == 27){ // ESC key to exit editing mode
-            break;
+            clear();
+            mvprintw(1,1,"%s","Do you want to save changes? (y/n)");
+            refresh();
+            char a = getch();
+            if (a == 'y'){
+                FILE *fptr = fopen(filename, "w");
+                for (int i = 0; i < buffer->count; i++){
+                    fprintf(fptr, "%s\n", buffer->lines[i]);
+                }   
+                fclose(fptr); 
+                break; 
+                }
+            else {
+                break;
+            }
         }
 
         switch (c){
@@ -122,10 +171,9 @@ void edit_buffer(BufferLines *buffer){
             cursor_row = cursor_row + 1;
             cursor_col = 0;
             if (cursor_row >= buffer->count){
-                pthread_mutex_unlock(&buffer->lock); //edit buffer memory locks the buffer, so if not unclocked it will be ad deadlock
-                edit_buffer_memory(buffer, ""); // add a new empty line if at the end of the buffer
-                pthread_mutex_lock(&buffer->lock); // lock the buffer again after editing
+                insert_line(buffer, cursor_row, ""); // insert a new empty line at the end
             }
+
             break;
         default:
             if (c >= 32 && c <= 126){ // printable characters

@@ -29,7 +29,7 @@ void edit_buffer(BufferLines *buffer);
 void insert_char(char *line, char c, int position);
 void delete_char(char *line, int position);
 void delete_line(BufferLines *buffer, int line_number);
-
+void insert_line(BufferLines *buffer, int line_index, const char *new_line);
 
 
 
