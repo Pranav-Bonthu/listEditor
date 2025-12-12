@@ -32,7 +32,7 @@ void load_file(BufferLines *buffer, const char *filename){
 }
 
 void print_buffer(BufferLines *buffer){
-    clear(); // clears the screen before printing
+    clear(); // clears the screen before printing using ncurses
     
     for (int i = 0; i < buffer->count; i++){
          mvprintw(i, 0, "%s", buffer->lines[i]); 
