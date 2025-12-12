@@ -12,12 +12,14 @@ Getting started:
 
 How the code works:
 
-External libraries used:
-1. ncurses: A library that allows for text editing/cursor movement on a screen in the terminal
-2. pthread: A library for creating and managing threads
+Notable external libraries used:
+1. ncurses.h: A library that allows for text editing/cursor movement on a screen in the terminal
+2. pthread.h: A library for creating and managing threads
+3. sys/file.h: A library that provides system declarations to control file states
+
 
 There are 4 main files:
-1. main.c: This is the main file that utilizes all of the functions in order to allow the program to run
+1. main.c: This is the main file that utilizes all of the functions to allow the program to run
 2. buffer.h: A library that contains all of the functions, and stores the struct named "BufferLines", which holds the data of the buffer
 3. buffer_functions.c: A file that contains a variety of functions that help initialize and change the allocated memory of the buffer. The functions are:
    - initial_buffer: Sets some initial values for the buffer
